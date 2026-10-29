@@ -253,15 +253,39 @@ function buildBG() {
   b.fillStyle = 'rgba(70,120,255,0.22)'; b.beginPath(); b.arc(364, 52, 34, 0, Math.PI * 2); b.fill();
   R(340, 44, 48, 16, '#2b55f0'); R(340, 44, 48, 2, '#7da0ff'); R(340, 58, 48, 2, '#1b2f8c'); tiny(b, 'POLICE', 364 - tinyW('POLICE', 2) / 2 | 0, 47, '#ffffff', 2);
   R(310, 132, 108, 4, '#8e887b'); R(304, 136, 120, 4, '#7b766b');
-  // police car (Battenburg)
-  const cx = 120, cy = 108;
-  R(cx + 22, cy - 6, 70, 2, '#16205a'); R(cx + 40, cy - 9, 34, 4, '#1d3cff'); R(cx + 40, cy - 9, 8, 4, '#7ea2ff'); R(cx + 66, cy - 9, 8, 4, '#7ea2ff');
-  R(cx + 14, cy - 4, 92, 16, '#f2f2f2'); R(cx + 22, cy - 2, 32, 10, '#2c3a55'); R(cx + 58, cy - 2, 34, 10, '#2c3a55');
-  R(cx, cy + 12, 128, 18, '#f2f2f2');
-  for (let i = 0; i < 16; i++) R(cx + i * 8, cy + 18, 8, 6, i % 2 ? '#1f3fbf' : '#e3e600');
-  for (let i = 0; i < 16; i++) R(cx + i * 8, cy + 24, 8, 4, i % 2 ? '#e3e600' : '#1f3fbf');
-  R(cx + 2, cy + 13, 6, 3, '#ffe9a0'); R(cx + 120, cy + 13, 6, 3, '#d33');
-  [cx + 18, cx + 100].forEach(x => { R(x - 2, cy + 26, 18, 6, '#111'); R(x + 3, cy + 28, 8, 3, '#888'); });
+  // police car: estate in Battenburg livery, parked side-on facing right
+  {
+    const x0 = 112, gy = 140;
+    const span = (y, l, r, c) => R(x0 + l, y, r - l, 1, c);
+    const disc = (cx, cy, r, c, top) => { for (let dy = -r; dy <= (top ? 0 : r); dy++) { const w = Math.round(Math.sqrt(r * r - dy * dy)); R(x0 + cx - w, cy + dy, w * 2, 1, c); } };
+    b.fillStyle = 'rgba(60,110,255,0.12)'; b.beginPath(); b.ellipse(x0 + 65, 95, 28, 9, 0, 0, Math.PI * 2); b.fill();
+    R(x0 + 48, 97, 34, 2, '#1a1f3a'); R(x0 + 50, 93, 30, 4, '#2a5bff'); R(x0 + 50, 93, 30, 1, '#7da0ff');
+    R(x0 + 52, 94, 6, 2, '#cfdcff'); R(x0 + 72, 94, 6, 2, '#cfdcff'); R(x0 + 63, 93, 4, 4, '#1a1f3a');
+    span(98, 34, 94, '#f4f4f4'); span(99, 31, 97, '#f4f4f4');
+    for (let y = 100; y < 112; y++) {
+      const l = Math.round(31 - (y - 100) * 0.75), r = Math.round(97 + (y - 100) * 1.25);
+      span(y, l - 2, r + 2, '#f4f4f4'); span(y, l, r, '#26324c');
+      const k = y - 100; R(x0 + 40 + k, y, 3, 1, '#465b82'); R(x0 + 74 + k, y, 3, 1, '#465b82');
+    }
+    R(x0 + 60, 100, 3, 12, '#f4f4f4'); R(x0 + 61, 100, 1, 12, '#c9ced5');
+    const body = [[112, 16, 112], [113, 10, 118], [114, 6, 123], [115, 4, 127]];
+    for (const [y, l, r] of body) span(y, l, r, y === 112 ? '#ffffff' : '#f4f4f4');
+    for (let y = 116; y < 132; y++) span(y, 4, 130, '#f4f4f4');
+    span(132, 6, 128, '#cfd3d8'); span(133, 8, 126, '#b9bec5');
+    for (let i = 0; i * 8 < 126; i++) {
+      const x = 4 + i * 8, w = Math.min(8, 130 - x);
+      R(x0 + x, 120, w, 4, i % 2 ? '#1f3fbf' : '#e3e600');
+      R(x0 + x, 124, w, 4, i % 2 ? '#e3e600' : '#1f3fbf');
+    }
+    tiny(b, 'POLICE', x0 + 26, 114, '#1f3fbf');
+    R(x0 + 60, 112, 1, 20, '#a9afb7'); R(x0 + 88, 112, 1, 20, '#a9afb7');
+    R(x0 + 66, 116, 5, 1, '#8a9098'); R(x0 + 94, 116, 5, 1, '#8a9098');
+    R(x0 + 104, 109, 5, 3, '#f4f4f4'); R(x0 + 104, 111, 5, 1, '#8a9098');
+    R(x0 + 125, 115, 5, 3, '#fff3b0'); R(x0 + 4, 114, 3, 5, '#d63a3a'); R(x0 + 4, 114, 3, 1, '#ff8080');
+    R(x0 + 120, 129, 11, 3, '#3a3f48'); R(x0 + 3, 129, 9, 3, '#3a3f48');
+    [30, 106].forEach(cx => { disc(cx, 132, 10, '#141418', true); disc(cx, 132, 8, '#0c0c0e'); disc(cx, 132, 4, '#a9afb7'); R(x0 + cx - 1, 131, 2, 2, '#4a4f58'); });
+    R(x0 + 8, gy - 1, 118, 1, 'rgba(0,0,0,0.25)');
+  }
   // lamp post + bin
   R(26, 28, 3, 112, '#232633'); R(22, 24, 14, 5, '#232633'); b.fillStyle = 'rgba(255,214,120,0.18)'; b.beginPath(); b.arc(29, 32, 20, 0, Math.PI * 2); b.fill(); R(24, 29, 10, 3, '#ffe29a');
   R(270, 110, 14, 26, '#1d3b2a'); R(268, 108, 18, 4, '#244a35'); tiny(b, 'BIN', 272, 118, '#9fc8a8');
