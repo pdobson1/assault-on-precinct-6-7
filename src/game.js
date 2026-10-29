@@ -184,6 +184,32 @@ document.querySelectorAll('.abtns button').forEach(b => {
   pad.addEventListener('pointerup', clear); pad.addEventListener('pointercancel', clear);
 })();
 
+// gamepads (standard mapping): polled once a frame and fed through press/release like keys
+const PAD_BTN = { atk: [2], jump: [0], spc: [1, 3], start: [9] };
+const padHeld = {};
+let padsOk = true;
+function pollPads() {
+  if (!padsOk || !navigator.getGamepads) return;
+  let pads;
+  try { pads = navigator.getGamepads(); } catch (e) { padsOk = false; return; }
+  const now = {};
+  for (const gp of pads) {
+    if (!gp || !gp.connected) continue;
+    const b = i => !!(gp.buttons[i] && gp.buttons[i].pressed);
+    const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0;
+    if (b(14) || ax < -0.4) now.left = true;
+    if (b(15) || ax > 0.4) now.right = true;
+    if (b(12) || ay < -0.4) now.up = true;
+    if (b(13) || ay > 0.4) now.down = true;
+    for (const k in PAD_BTN) if (PAD_BTN[k].some(b)) now[k] = true;
+  }
+  for (const k of ['left', 'right', 'up', 'down', 'atk', 'jump', 'spc', 'start']) {
+    if (now[k] && !padHeld[k]) press(k);
+    else if (!now[k] && padHeld[k]) release(k);
+    padHeld[k] = !!now[k];
+  }
+}
+
 // ---------------------------------------------------------------- background
 const AREAS = [
   { name: 'OUTSIDE THE NICK', x0: 0 }, { name: 'FRONT DESK', x0: 560 },
@@ -1040,7 +1066,7 @@ window.addEventListener('resize', fit);
 let last = performance.now();
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
-  update(dt); render(); musicTick();
+  pollPads(); update(dt); render(); musicTick();
   requestAnimationFrame(frame);
 }
 function start(data) {

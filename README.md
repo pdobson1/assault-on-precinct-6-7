@@ -15,6 +15,8 @@ Open `index.html` in a browser to play. It's a single self-contained file, so it
 | Start / pause | Enter |
 | Mute | M |
 
+Gamepads work too (Xbox, PlayStation and most standard pads): left stick or d-pad to move, X / Square to punch, A / Cross to jump, B / Circle or Y / Triangle for the baton spin, Start to pause.
+
 On touch screens an on-screen pad and buttons appear.
 
 ## The station
