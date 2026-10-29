@@ -1163,6 +1163,45 @@ function drawTitle() {
   text('ENTER, OR TAP THE SCREEN', W / 2, 198, '#8fa0ff', 8, 'center');
   text('HI ' + String(G.hi).padStart(7, '0'), W - 6, 6, '#8fa0ff', 8, 'right');
 }
+// opening briefing, typed out word by word; names and numbers picked out in colour
+const STORY = (() => {
+  const paras = [
+    '6th of July, 2067.',
+    '6-7 is out of control, and Chief Constable Dalgleish has ordered a crackdown to deal with it.',
+    'An estimated 6 to 7 million people are unemployed as a result of their 6-7 obsession.',
+    "He sent in two of his best officers, grizzled 67-year-old veteran PC Sutton and fresh-faced rookie PC Shearer, who's only 6 or 7 months into the job.",
+    'Together, they must defend the precinct.'
+  ];
+  const words = [], COLS = 44;
+  let line = 0, idx = 0;
+  paras.forEach((p, pi) => {
+    let col = 0;
+    for (const w of p.split(' ')) {
+      if (col && col + w.length > COLS) { line++; col = 0; }
+      let c = '#ffffff';
+      if (pi === 0) c = '#d4ef00';
+      else if (/^(PC|Sutton|Shearer|Chief|Constable|Dalgleish)/.test(w)) c = '#d4ef00';
+      else if (/6|7/.test(w)) c = '#ff5fb0';
+      words.push({ w, col, line, c, at: idx });
+      idx += w.length + 1; col += w.length + 1;
+    }
+    line += 2;
+  });
+  return { words, total: idx, lines: line - 1 };
+})();
+function drawStory() {
+  ctx.drawImage(bg, 260, 0, W, H, 0, 0, W, H);
+  ctx.fillStyle = 'rgba(4,6,20,0.88)'; ctx.fillRect(0, 0, W, H);
+  if (Math.floor(G.t * 2) % 2) { ctx.fillStyle = 'rgba(47,91,255,0.10)'; ctx.fillRect(0, 0, W, H); }
+  for (let i = 0; i < W; i += 8) { ctx.fillStyle = (i / 8) % 2 ? '#1f3fbf' : '#e3e600'; ctx.fillRect(i, 0, 8, 3); ctx.fillRect(i, H - 3, 8, 3); }
+  const n = Math.min(STORY.total, Math.floor(G.storyT * 42)), top = Math.round((H - 22 - STORY.lines * 11) / 2);
+  for (const wd of STORY.words) {
+    if (wd.at >= n) break;
+    text(wd.w.slice(0, n - wd.at), 16 + wd.col * 8, top + wd.line * 11, wd.c);
+  }
+  if (n >= STORY.total) { if (Math.floor(G.t * 2.5) % 2 === 0) text('PRESS START', W / 2, H - 18, '#8fa0ff', 8, 'center'); }
+  else text('START TO SKIP', W - 8, H - 14, '#4a5590', 8, 'right');
+}
 function drawSelect() {
   ctx.drawImage(bg, 600, 0, W, H, 0, 0, W, H);
   ctx.fillStyle = 'rgba(6,9,28,0.78)'; ctx.fillRect(0, 0, W, H);
@@ -1190,6 +1229,7 @@ function render() {
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
   if (G.mode === 'title') { drawTitle(); return; }
   if (G.mode === 'select') { drawSelect(); return; }
+  if (G.mode === 'story') { drawStory(); return; }
   drawWorld(camX);
   drawHUD();
   if (G.mode === 'pause') {
@@ -1220,7 +1260,17 @@ function update(dt) {
   clock += dt; G.t += dt;
   if (buf('mute')) setMuted(!A.muted);
   switch (G.mode) {
-    case 'title': if (buf('start') || buf('atk')) { G.mode = 'select'; G.selT = 0; S.pick(); } break;
+    case 'title': if (buf('start') || buf('atk')) { G.mode = 'story'; G.storyT = 0; G.storyN = 0; S.pick(); } break;
+    case 'story': {
+      G.storyT += dt;
+      const n = Math.min(STORY.total, Math.floor(G.storyT * 42));
+      if (n > G.storyN) { if (n % 3 === 0 && A.ctx) tone('square', 1300, 1300, 0.02, 0.04); G.storyN = n; }
+      if (buf('start') || buf('atk')) {
+        if (n < STORY.total) G.storyT = 999;
+        else { G.mode = 'select'; G.selT = 0; S.pick(); }
+      }
+      break;
+    }
     case 'select':
       G.selT += dt;
       if (buf('left') && G.sel !== 0) { G.sel = 0; S.swing(); }
