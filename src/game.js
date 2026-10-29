@@ -437,9 +437,13 @@ const TYPES = {
   tracky: { S: 1.15, hp: 22, speed: 64, dmg: 8, reach: 31, windup: 0.3, score: 250, head: 'cap', kick: true, stripes: true, tw: 10,
     names: ['DECLAN', 'CONNOR', 'MASON', 'ROBBIE', 'KIERAN', 'SHANE'],
     pal: () => { const c = pick(['#6b2fa3', '#1f7f8c', '#b0262f', '#24408f', '#1d1d22', '#2f7a3a']); return pal({ body: c, leg: c, skin: pick(SKINS), cap: pick(['#111', '#f2f2f2', '#c22', '#1f3fbf']) }); } },
-  big: { S: 1.45, hp: 64, speed: 30, dmg: 13, reach: 31, windup: 0.55, score: 500, head: 'bald', heavy: true, armor: 2, tw: 14,
+  big: { S: 1.45, hp: 64, speed: 30, dmg: 13, reach: 31, windup: 0.55, score: 500, head: 'buzz', heavy: true, armor: 2, tw: 14, kit: true,
     names: ['BIG DAZ', 'TANK', 'MASSIVE STEVE', 'CHUNK'],
-    pal: () => { const s = pick(SKINS); return pal({ body: '#ebe7da', sleeve: s, leg: pick(['#3b4f78', '#2f3a52']), skin: s, shoe: '#2a2a2a' }); } },
+    // replica football shirt with a 6 or a 7 on the back
+    pal: () => {
+      const [body, trim] = pick([['#c8102e', '#ffffff'], ['#6cabdd', '#1c2c5b'], ['#1f4fbf', '#ffffff'], ['#f6d10a', '#1a7a3a'], ['#7a1f3d', '#8fc4e8'], ['#1a1a1a', '#f6d10a']]);
+      return pal({ body, trim, num: pick(['6', '7']), leg: pick(['#3b4f78', '#2f3a52']), skin: pick(SKINS), hair: pick(['#2a1c12', '#5a3a1e', '#1a1a1a']), shoe: '#2a2a2a' });
+    } },
   boss: { S: 1.65, hp: 300, speed: 42, dmg: 15, reach: 36, windup: 0.45, score: 5000, head: 'hotdog', heavy: true, armor: 3, tw: 13, boss: true,
     names: ['SILLY SAUSAGE'],
     pal: () => pal({ body: '#c4513a', sleeve: '#c4513a', leg: '#2b2f3d', shoe: '#e8e8e8', skin: '#f0c19a', bun: '#e6ad62', bunD: '#c48a45', sheen: '#e57a5c', mustard: '#ffd23a' }) }
@@ -524,7 +528,8 @@ function drawActor(a, camX) {
   const ax = t => [hx + Math.sin(L) * tl * t, hy + Math.cos(L) * tl * t];
   const arm = (base, ang, cS, cH, front) => {
     const [k, h] = limb(base[0], base[1], ang[0], ang[1], 8, 8);
-    ln(base, k, 4, cS); ln(k, h, 4, cS);
+    ln(base, k, 4, cS); ln(k, h, 4, d.kit ? cH : cS);
+    if (d.kit && !a.flash) ln([base[0] + (k[0] - base[0]) * 0.75, base[1] + (k[1] - base[1]) * 0.75], k, 4, P.trim);
     if (d.stripes && !a.flash) { ln(base, k, 1, '#f4f4f4'); ln(k, h, 1, '#f4f4f4'); }
     if (a.kind === 'player' && !a.flash) ln([k[0] + (h[0] - k[0]) * 0.45, k[1] + (h[1] - k[1]) * 0.45], [k[0] + (h[0] - k[0]) * 0.65, k[1] + (h[1] - k[1]) * 0.65], 4, P.stripe);
     if (p.palms) bx(h[0] + 1, h[1] + 0.5, 4, 2, cH); else bx(h[0], h[1], 3.4, 3.4, cH);
@@ -564,8 +569,11 @@ function drawActor(a, camX) {
       const q = ax(0.1); bx(q[0] + 2, q[1] + 1, 7, 3, P.bodyD); const r = ax(0.9); bx(r[0] + 3, r[1] - 2, 1, 4, '#ddd');
     } else if (d.stripes) {
       const q0 = ax(-0.3), q1 = ax(1.2); ln([q0[0] + 4, q0[1]], [q1[0] + 4, q1[1]], 1, '#f4f4f4');
-    } else if (d.head === 'bald') {
-      const q = ax(1); bx(q[0] - 4, q[1] - 2, 2, 5, P.skin); bx(q[0] + 4, q[1] - 2, 2, 5, P.skin);
+    } else if (d.kit) {
+      const q = ax(1.05); bx(q[0] + 1.5, q[1], 6, 1.6, P.trim);
+      // shirt number on the back, drawn so it never reads mirrored
+      const g = TF[P.num], c0 = ax(0.5), u = 1.3, cx = c0[0] - 3.2, cy = c0[1] + 0.5;
+      for (let i = 0; i < 15; i++) if (g[i] === '1') bx(cx + ((i % 3) - 1) * u * a.face, cy + (2 - Math.floor(i / 3)) * u, u, u, P.trim);
     }
   }
   // head
@@ -586,8 +594,8 @@ function drawActor(a, camX) {
     bx(hdx + 2.5, hdy + 9, 1.6, 2, P.badge);
   } else if (d.head === 'cap') {
     bx(hdx - 3.5, hdy + 1, 2, 5, P.hair); bx(hdx - 0.5, hdy + 3.5, 9, 3, P.cap); bx(hdx + 5, hdy + 2.5, 4, 1.2, P.cap);
-  } else if (d.head === 'bald') {
-    bx(hdx - 2, hdy + 1, 1.5, 2, P.skinD); if (!a.flash) bx(hdx + 1.5, hdy - 3, 4, 1.5, P.skinD);
+  } else if (d.head === 'buzz') {
+    bx(hdx - 0.5, hdy + 4, 8.4, 1.6, P.hair); bx(hdx - 3.4, hdy + 1.5, 1.6, 4.4, P.hair); bx(hdx - 2, hdy + 0.5, 1.5, 2, P.skinD);
   }
   if (a.state === 'taunt' && !a.flash) bx(hdx + (hotdog ? 3.5 : 2.5), hdy - 2.5, 2.5, 1, '#5a2a1a');
   arm([shx + 1, shy], p.af, P.sleeve, P.skin, true);
