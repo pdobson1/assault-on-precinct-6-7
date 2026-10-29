@@ -1163,7 +1163,7 @@ function drawTitle() {
   text('ENTER, OR TAP THE SCREEN', W / 2, 198, '#8fa0ff', 8, 'center');
   text('HI ' + String(G.hi).padStart(7, '0'), W - 6, 6, '#8fa0ff', 8, 'right');
 }
-// opening briefing, typed out word by word; names and numbers picked out in colour
+// opening briefing, typed out in capitals word by word; names picked out in colour
 const STORY = (() => {
   const paras = [
     '6th of July 2067.',
@@ -1181,8 +1181,7 @@ const STORY = (() => {
       let c = '#ffffff';
       if (pi === 0) c = '#d4ef00';
       else if (/^(PC|Sutton|Shearer|Chief|Constable|Dalglish)/.test(w)) c = '#d4ef00';
-      else if (/6|7/.test(w)) c = '#ff5fb0';
-      words.push({ w, col, line, c, at: idx });
+      words.push({ w: w.toUpperCase(), col, line, c, at: idx });
       idx += w.length + 1; col += w.length + 1;
     }
     line += 2;
