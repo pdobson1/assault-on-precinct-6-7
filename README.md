@@ -21,7 +21,7 @@ On touch screens an on-screen pad and buttons appear.
 
 ## The station
 
-Fight through four areas: outside the nick, the front desk, the CID office and the custody suite, where Silly Sausage is waiting. Catch a goon mid 6-7 for double damage and a BUSTED bonus. Smash bins, boxes and filing cabinets for a cuppa or a chip barm.
+Fight through four areas: outside the nick, the front desk, the CID office and the custody suite, where Silly Sausage is waiting. Catch a goon mid 6-7 for double damage and a BUSTED bonus. Smash bins, boxes and filing cabinets for a brew or a chip barm.
 
 ## Editing
 

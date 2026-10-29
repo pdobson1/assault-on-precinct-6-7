@@ -556,7 +556,7 @@ const PROPS = [
   { x: 1480, z: 4, type: 'cabinet', drop: 'barm' }, { x: 1700, z: 50, type: 'box', drop: 'phone' }, { x: 2000, z: 8, type: 'bin', drop: 'tea' },
   { x: 2380, z: 10, type: 'box', drop: 'barm' }, { x: 2600, z: 50, type: 'cabinet', drop: 'tea' }, { x: 2740, z: 6, type: 'box', drop: 'tea' }
 ];
-const PICK = { tea: { hp: 30, label: 'CUPPA!' }, barm: { hp: 60, label: 'CHIP BARM!' }, vape: { score: 500, label: 'CONFISCATED!' }, phone: { score: 1000, label: 'EVIDENCE!' } };
+const PICK = { tea: { hp: 30, label: 'BREW!' }, barm: { hp: 60, label: 'CHIP BARM!' }, vape: { score: 500, label: 'CONFISCATED!' }, phone: { score: 1000, label: 'EVIDENCE!' } };
 
 function makeActor(kind, x, z) {
   const def = kind === 'player' ? PLAYER_DEF : TYPES[kind];
