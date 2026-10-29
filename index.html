@@ -1167,7 +1167,7 @@ function drawTitle() {
 const STORY = (() => {
   const paras = [
     '6th of July, 2067.',
-    '6-7 is out of control, and Chief Constable Dalgleish has ordered a crackdown to deal with it.',
+    '6-7 is out of control, and Chief Constable Dalglish has ordered a crackdown to deal with it.',
     'An estimated 6 to 7 million people are unemployed as a result of their 6-7 obsession.',
     "He sent in two of his best officers, grizzled 67-year-old veteran PC Sutton and fresh-faced rookie PC Shearer, who's only 6 or 7 months into the job.",
     'Together, they must defend the precinct.'
@@ -1180,7 +1180,7 @@ const STORY = (() => {
       if (col && col + w.length > COLS) { line++; col = 0; }
       let c = '#ffffff';
       if (pi === 0) c = '#d4ef00';
-      else if (/^(PC|Sutton|Shearer|Chief|Constable|Dalgleish)/.test(w)) c = '#d4ef00';
+      else if (/^(PC|Sutton|Shearer|Chief|Constable|Dalglish)/.test(w)) c = '#d4ef00';
       else if (/6|7/.test(w)) c = '#ff5fb0';
       words.push({ w, col, line, c, at: idx });
       idx += w.length + 1; col += w.length + 1;
