@@ -269,7 +269,15 @@ function buf(k, win = 0.16) { if (buffered[k] !== undefined && clock - buffered[
 window.addEventListener('keydown', e => { const k = KEYMAP[e.code]; if (!k) return; e.preventDefault(); if (e.repeat) return; press(k); });
 window.addEventListener('keyup', e => { const k = KEYMAP[e.code]; if (k) release(k); });
 window.addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
-cv.addEventListener('pointerdown', () => { cv.focus(); unlockAudio(); if (G.mode !== 'play') { press('start'); setTimeout(() => release('start'), 60); } });
+cv.addEventListener('pointerdown', e => {
+  cv.focus(); unlockAudio();
+  if (G.mode === 'select') {
+    // tap an officer to pick them, tap them again to go on duty
+    const r = cv.getBoundingClientRect(), side = e.clientX - r.left < r.width / 2 ? 0 : 1;
+    if (side !== G.sel) { G.sel = side; return; }
+  }
+  if (G.mode !== 'play') { press('start'); setTimeout(() => release('start'), 60); }
+});
 document.getElementById('mute').addEventListener('click', () => { unlockAudio(); setMuted(!A.muted); });
 document.querySelectorAll('.abtns button').forEach(b => {
   const k = b.dataset.k;
@@ -489,7 +497,12 @@ function pal(o) {
 }
 const PLAYER_PAL = pal({ body: '#d4ef00', bodyD: '#9fb500', sleeve: '#c9e300', sleeveD: '#8ea200', stripe: '#d9dee6', leg: '#1d2030', shoe: '#101014', skin: '#f1c29a', hat: '#141a33', badge: '#d0d7df' });
 const WHITE = new Proxy({}, { get: () => '#ffffff' });
-const PLAYER_DEF = { S: 1.25, hp: 100, head: 'helmet', kind: 'player', tw: 11, name: 'PC DIXON' };
+// the two playable officers: Sutton hits harder, Shearer is quicker
+const OFFICERS = [
+  { S: 1.25, hp: 100, head: 'helmet', kind: 'player', tw: 11, name: 'PC SUTTON', spd: 1, atkSpd: 1, dmg: 1.15, power: 5, speed: 3, pal: PLAYER_PAL },
+  { S: 1.2, hp: 100, head: 'bowler', kind: 'player', tw: 10, name: 'PC SHEARER', spd: 1.14, atkSpd: 1.15, dmg: 0.95, power: 3, speed: 5,
+    pal: pal({ body: '#d4ef00', bodyD: '#9fb500', sleeve: '#c9e300', sleeveD: '#8ea200', stripe: '#d9dee6', leg: '#1d2030', shoe: '#101014', skin: '#e9b58f', hair: '#6b3a1e', hat: '#141a33', badge: '#d0d7df' }) }
+];
 const TYPES = {
   hoodie: { S: 1.2, hp: 26, speed: 52, dmg: 7, reach: 27, windup: 0.38, score: 200, head: 'hood', tw: 11,
     names: ['JAYDEN', 'TYLER', 'KAI', 'BRANDON', 'RYAN', 'LIAM', 'TOMMY', 'CALLUM'],
@@ -638,6 +651,12 @@ function drawActor(a, camX) {
   if (d.head === 'helmet') {
     bx(hdx, hdy + 4.5, 11, 2, P.hat); bx(hdx - 0.5, hdy + 7.5, 9, 5, P.hat); bx(hdx - 0.5, hdy + 10.5, 6, 2, P.hat);
     bx(hdx - 0.5, hdy + 12, 2, 2, P.badge); bx(hdx + 3, hdy + 7, 2, 3, P.badge);
+  } else if (d.head === 'bowler') {
+    bx(hdx - 4, hdy - 0.5, 2.5, 6, P.hair); bx(hdx - 5.5, hdy + 0.5, 3.5, 3.5, P.hair);
+    bx(hdx, hdy + 4.5, 11, 1.6, P.hat); bx(hdx - 0.5, hdy + 8.6, 8, 3, P.hat); bx(hdx - 0.5, hdy + 10.5, 6, 1.5, P.hat);
+    bx(hdx - 0.5, hdy + 6.3, 8, 2, a.flash ? '#fff' : '#f2f2f2');
+    if (!a.flash) for (let i = 0; i < 4; i++) bx(hdx - 4 + i * 2 + 0.5, hdy + 6.3 + (i % 2 ? 0.5 : -0.5), 1, 1, '#111');
+    bx(hdx + 2.5, hdy + 9, 1.6, 2, P.badge);
   } else if (d.head === 'cap') {
     bx(hdx - 3.5, hdy + 1, 2, 5, P.hair); bx(hdx - 0.5, hdy + 3.5, 9, 3, P.cap); bx(hdx + 5, hdy + 2.5, 4, 1.2, P.cap);
   } else if (d.head === 'bald') {
@@ -654,8 +673,8 @@ function drawShadow(x, z, w, camX) {
 }
 
 // ---------------------------------------------------------------- game state
-const G = { mode: 'title', t: 0, round: 1, score: 0, hi: 0, lives: 3, shake: 0, freeze: 0, tauntCd: 2, taunter: null, cont: 0, msg: null, msgT: 0, area: -1, areaT: 0, goT: 0, clearT: 0, enemyBar: null, enemyBarT: 0, time: 0 };
-try { G.hi = +localStorage.getItem('p67-hi') || 0; } catch (e) {}
+const G = { char: 0, sel: 0, mode: 'title', t: 0, round: 1, score: 0, hi: 0, lives: 3, shake: 0, freeze: 0, tauntCd: 2, taunter: null, cont: 0, msg: null, msgT: 0, area: -1, areaT: 0, goT: 0, clearT: 0, enemyBar: null, enemyBarT: 0, time: 0 };
+try { G.hi = +localStorage.getItem('p67-hi') || 0; G.sel = G.char = +localStorage.getItem('p67-char') === 1 ? 1 : 0; } catch (e) {}
 let player, enemies = [], pickups = [], props = [], parts = [], pops = [], fx = [], spawnQ = [], camX = 0, waveIdx = 0, wave = null;
 let nextId = 1;
 
@@ -677,12 +696,12 @@ const PROPS = [
 const PICK = { tea: { hp: 30, label: 'BREW!' }, barm: { hp: 60, label: 'CHIP BARM!' }, vape: { score: 500, label: 'CONFISCATED!' }, phone: { score: 1000, label: 'EVIDENCE!' } };
 
 function makeActor(kind, x, z) {
-  const def = kind === 'player' ? PLAYER_DEF : TYPES[kind];
+  const def = kind === 'player' ? OFFICERS[G.char] : TYPES[kind];
   const diff = 1 + (G.round - 1) * 0.3;
   const hp = kind === 'player' ? def.hp : Math.round(def.hp * diff);
   return { id: nextId++, kind, def, x, z, y: 0, vx: 0, vy: 0, face: 1, S: def.S, hp, maxHp: hp, state: 'idle', st: 0, t: Math.random() * 10,
     walkPh: 0, flash: 0, rot: 0, inv: 0, moving: false, atkCd: rnd(0.4, 1.2), armorHits: 0, tauntCd: rnd(3, 6),
-    pal: kind === 'player' ? PLAYER_PAL : def.pal(), name: kind === 'player' ? def.name : pick(def.names) };
+    pal: kind === 'player' ? def.pal : def.pal(), name: kind === 'player' ? def.name : pick(def.names) };
 }
 
 function resetStage() {
@@ -774,7 +793,7 @@ function startAttack(p) {
   const chain = p.lastAtkT < 0.45 && p.lastConnected && p.comboStep > 0;
   const step = chain ? p.comboStep % 3 : 0;
   if (keys.left) p.face = -1; else if (keys.right) p.face = 1;
-  p.atk = ['jab', 'cross', 'upper'][step]; p.atkDur = [0.2, 0.22, 0.36][step]; p.comboStep = step + 1;
+  p.atk = ['jab', 'cross', 'upper'][step]; p.atkDur = [0.2, 0.22, 0.36][step] / p.def.atkSpd; p.comboStep = step + 1;
   p.state = 'attack'; p.st = 0; p.hitSet = new Set(); p.connected = false; p.queued = false; S.swing();
 }
 function updatePlayer(p, dt) {
@@ -789,14 +808,14 @@ function updatePlayer(p, dt) {
       if (buf('atk')) { startAttack(p); break; }
       if (mx || mz) {
         const n = mx && mz ? 0.8 : 1;
-        p.x += mx * 92 * n * dt; p.z += mz * 52 * n * dt; if (mx) p.face = mx;
+        p.x += mx * 92 * p.def.spd * n * dt; p.z += mz * 52 * p.def.spd * n * dt; if (mx) p.face = mx;
         p.moving = true; p.walkPh += dt * 10; p.state = 'walk';
       } else p.state = 'idle';
       break;
     case 'attack': {
       const k = p.st / p.atkDur;
       if (k > 0.22 && k < 0.7) {
-        const dmg = { jab: 6, cross: 7, upper: 12 }[p.atk];
+        const dmg = Math.round({ jab: 6, cross: 7, upper: 12 }[p.atk] * p.def.dmg);
         if (tryHit(p, 30, dmg, p.atk === 'upper', p.hitSet, false)) p.connected = true;
       }
       if (k > 0.35 && buf('atk')) p.queued = true;
@@ -809,13 +828,13 @@ function updatePlayer(p, dt) {
     case 'jump':
       p.x += p.jvx * dt; p.y += p.vy * dt; p.vy -= GRAV * dt;
       if (!p.kicked && buf('atk')) { p.kicked = true; S.swing(); }
-      if (p.kicked) tryHit(p, 32, 12, true, p.hitSet, false);
+      if (p.kicked) tryHit(p, 32, Math.round(12 * p.def.dmg), true, p.hitSet, false);
       if (p.y <= 0) { p.y = 0; p.state = 'idle'; p.st = 0; }
       break;
     case 'special':
       p.inv = 0.05;
       if (Math.floor(p.st / 0.07) !== Math.floor((p.st - dt) / 0.07)) p.face = -p.face;
-      if (p.st < 0.38) tryHit(p, 42, 14, true, p.hitSet, true);
+      if (p.st < 0.38) tryHit(p, 42, Math.round(14 * p.def.dmg), true, p.hitSet, true);
       if (p.st >= 0.5) { p.state = 'idle'; p.inv = 0.25; }
       break;
     case 'hurt': if (p.st >= 0.3) p.state = 'idle'; break;
@@ -1061,7 +1080,7 @@ function bar(x, y, w, h, v, col) {
   ctx.fillStyle = 'rgba(255,255,255,0.35)'; ctx.fillRect(x, y, Math.round(w * clamp(v, 0, 1)), 1);
 }
 function drawHUD() {
-  text('PC DIXON', 6, 5, '#d4ef00');
+  text(player.name, 6, 5, '#d4ef00');
   bar(6, 15, 96, 6, player.hp / player.maxHp, player.hp < 30 && Math.floor(G.t * 6) % 2 ? '#ff4a3a' : '#d4ef00');
   // lives as helmets
   for (let i = 0; i < G.lives - 1 && i < 5; i++) { const x = 108 + i * 9; ctx.fillStyle = '#000'; ctx.fillRect(x - 1, 12, 9, 10); ctx.fillStyle = '#141a33'; ctx.fillRect(x, 16, 7, 5); ctx.fillRect(x + 1, 13, 5, 3); ctx.fillStyle = '#d0d7df'; ctx.fillRect(x + 3, 17, 2, 2); }
@@ -1091,12 +1110,16 @@ function drawHUD() {
 }
 
 // title scene actors
-const titleCast = [];
+const titleCast = [], selectCast = [];
 function buildTitleCast() {
   const mk = (k, x, z, face, off) => { const a = makeActor(k, x, z); a.face = face; a.state = 'taunt'; a.st = off; titleCast.push(a); };
   mk('hoodie', 214, 26, 1, 0); mk('tracky', 252, 46, 1, 0.5); mk('big', 300, 20, 1, 1.1);
   mk('hoodie', 480, 24, -1, 0.3); mk('tracky', 520, 44, -1, 0.9);
-  const p = makeActor('player', 370, 40); p.face = 1; p.state = 'idle'; titleCast.push(p);
+  const keep = G.char;
+  OFFICERS.forEach((o, i) => { G.char = i; const p = makeActor('player', 350 + i * 40, 40 - i * 6); p.face = 1; p.state = 'idle'; titleCast.push(p); });
+  G.char = keep;
+  OFFICERS.forEach((o, i) => { G.char = i; const p = makeActor('player', W / 2 + (i ? 70 : -70), 6); p.S *= 1.5; p.face = i ? -1 : 1; selectCast.push(p); });
+  G.char = keep;
 }
 function drawTitle() {
   const cx = 180;
@@ -1116,9 +1139,33 @@ function drawTitle() {
   text('ENTER, OR TAP THE SCREEN', W / 2, 198, '#8fa0ff', 8, 'center');
   text('HI ' + String(G.hi).padStart(7, '0'), W - 6, 6, '#8fa0ff', 8, 'right');
 }
+function drawSelect() {
+  ctx.drawImage(bg, 600, 0, W, H, 0, 0, W, H);
+  ctx.fillStyle = 'rgba(6,9,28,0.78)'; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < W; i += 8) { ctx.fillStyle = (i / 8) % 2 ? '#1f3fbf' : '#e3e600'; ctx.fillRect(i, 30, 8, 3); }
+  text('CHOOSE YOUR OFFICER', W / 2, 12, '#ffffff', 8, 'center');
+  selectCast.forEach((a, i) => {
+    const on = G.sel === i, cx = a.x;
+    if (on) {
+      const k = Math.floor(G.t * 4) % 2 ? '#d4ef00' : '#ffffff';
+      ctx.fillStyle = k; ctx.fillRect(cx - 52, 40, 104, 2); ctx.fillRect(cx - 52, 196, 104, 2); ctx.fillRect(cx - 52, 40, 2, 158); ctx.fillRect(cx - 2 + 52, 40, 2, 158);
+    }
+    a.t += 1 / 60; a.state = on && G.selT > 0 && Math.floor(G.t * 1.2) % 3 === 0 ? 'win' : 'idle';
+    drawShadow(a.x, a.z, 22 * a.S, 0); drawActor(a, 0);
+    if (!on) { ctx.fillStyle = 'rgba(6,9,28,0.45)'; ctx.fillRect(cx - 50, 42, 100, 154); }
+    const o = OFFICERS[i];
+    text(o.name, cx, 158, on ? '#d4ef00' : '#8188ab', 8, 'center');
+    [['POWER', o.power], ['SPEED', o.speed]].forEach(([lb, v], j) => {
+      text(lb, cx - 44, 172 + j * 11, '#ffffff');
+      for (let n = 0; n < 5; n++) { ctx.fillStyle = '#000'; ctx.fillRect(cx + 1 + n * 8, 171 + j * 11, 7, 8); ctx.fillStyle = n < v ? (on ? '#d4ef00' : '#6b7300') : '#2a3060'; ctx.fillRect(cx + 2 + n * 8, 172 + j * 11, 5, 6); }
+    });
+  });
+  text('LEFT / RIGHT TO CHOOSE, START TO GO ON DUTY', W / 2, 204, '#8fa0ff', 8, 'center');
+}
 function render() {
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H);
   if (G.mode === 'title') { drawTitle(); return; }
+  if (G.mode === 'select') { drawSelect(); return; }
   drawWorld(camX);
   drawHUD();
   if (G.mode === 'pause') {
@@ -1149,7 +1196,13 @@ function update(dt) {
   clock += dt; G.t += dt;
   if (buf('mute')) setMuted(!A.muted);
   switch (G.mode) {
-    case 'title': if (buf('start') || buf('atk')) startGame(1); break;
+    case 'title': if (buf('start') || buf('atk')) { G.mode = 'select'; G.selT = 0; S.pick(); } break;
+    case 'select':
+      G.selT += dt;
+      if (buf('left') && G.sel !== 0) { G.sel = 0; S.swing(); }
+      if (buf('right') && G.sel !== 1) { G.sel = 1; S.swing(); }
+      if (G.selT > 0.2 && (buf('start') || buf('atk'))) { G.char = G.sel; try { localStorage.setItem('p67-char', String(G.char)); } catch (e) {} startGame(1); }
+      break;
     case 'play':
       if (buf('start')) { G.mode = 'pause'; stop67(); break; }
       if (G.freeze > 0) { G.freeze -= dt; break; }

@@ -1,8 +1,13 @@
 # Assault on Precinct 6-7
 
-A 16-bit style scrolling beat 'em up in the vein of Final Fight and Streets of Rage. You're PC Dixon, a British bobby in hi-vis, clearing a police station of goons who keep doing the 6-7.
+A 16-bit style scrolling beat 'em up in the vein of Final Fight and Streets of Rage. Pick PC Sutton or PC Shearer, British bobbies in hi-vis, and clear a police station of goons who keep doing the 6-7.
 
 Open `index.html` in a browser to play. It's a single self-contained file, so it also works on GitHub Pages.
+
+## Officers
+
+- **PC Sutton** wears the custodian helmet and hits harder.
+- **PC Shearer** wears the bowler hat with the checked band and moves and punches faster.
 
 ## Controls
 
