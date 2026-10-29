@@ -319,6 +319,9 @@ function buildBG() {
   R(700, 36, 216, 54, 'rgba(160,205,225,0.30)'); for (let x = 700; x <= 916; x += 54) R(x, 36, 2, 54, '#8a9aa3'); R(700, 36, 218, 2, '#8a9aa3');
   [727, 781, 835, 889].forEach(x => { R(x - 3, 66, 6, 6, 'rgba(60,80,90,0.5)'); });
   R(760, 18, 100, 13, '#1b2a73'); R(785, 12, 1, 6, '#555'); R(835, 12, 1, 6, '#555'); tiny(b, 'ENQUIRIES', 810 - tinyW('ENQUIRIES') / 2 | 0, 22, '#ffffff');
+  // opening hours plaque hanging over the desk
+  R(700, 15, 56, 20, '#1b2a73'); R(700, 15, 56, 1, '#4e63c9'); R(712, 12, 1, 3, '#555'); R(744, 12, 1, 3, '#555');
+  tiny(b, 'OPENING HOURS', 728 - tinyW('OPENING HOURS') / 2 | 0, 18, '#ffffff'); tiny(b, '6AM - 7PM', 728 - tinyW('6AM - 7PM') / 2 | 0, 26, '#e3e600');
   R(696, 88, 226, 5, '#8c6747'); R(700, 93, 218, 47, '#6c4b33'); for (let x = 712; x < 918; x += 26) R(x, 96, 1, 41, '#5b3e2a');
   R(735, 82, 12, 6, '#e8e8e8'); R(737, 80, 8, 2, '#c33'); // bell + forms
   R(860, 84, 18, 4, '#f4f4f4'); R(862, 82, 18, 2, '#dcdcdc');
@@ -366,6 +369,17 @@ function buildBG() {
   R(1878, 98, 14, 10, '#3f6e2b'); tiny(b, 'TEA', 1879, 101, '#ffffff');
   [1898, 1906, 1914].forEach((x, i) => { R(x, 101, 6, 7, ['#ffffff', '#c22', '#1f3fbf'][i]); R(x + 6, 103, 1, 3, ['#ffffff', '#c22', '#1f3fbf'][i]); });
   R(1850, 74, 76, 14, '#ffffff'); tiny(b, 'WASH YOUR MUG', 1888 - tinyW('WASH YOUR MUG') / 2 | 0, 79, '#c22');
+  // break room corkboard with sign-up sheets
+  R(1838, 18, 120, 52, '#7a5634'); R(1840, 20, 116, 48, '#b88a55');
+  const signup = (x, l1, l2, c) => {
+    R(x, 23, 54, 43, '#fbfbf6'); R(x + 25, 22, 3, 3, '#d21f1f');
+    tiny(b, l1, x + 27 - tinyW(l1) / 2 | 0, 27, c); tiny(b, l2, x + 27 - tinyW(l2) / 2 | 0, 33, c);
+    for (let i = 0; i < 4; i++) {
+      const y = 42 + i * 6; R(x + 3, y + 4, 48, 1, '#c9d3e0'); tiny(b, String(i + 1), x + 3, y - 1, '#7a8090');
+      const n = Math.round(10 + sr() * 26); for (let j = 0; j < n; j += 3) R(x + 9 + j, y + 1 + (j % 2), 2, 1, '#2a3a8a');
+    }
+  };
+  signup(1842, '6-A-SIDE', 'FOOTBALL', '#c22'); signup(1900, '7-A-SIDE', 'NETBALL', '#1f6b3a');
   // filing cabinets
   [1966, 1990, 2014].forEach(x => { R(x, 94, 22, 44, '#8b929b'); for (let y = 97; y < 136; y += 11) { R(x + 2, y, 18, 9, '#9da4ad'); R(x + 8, y + 3, 6, 2, '#555c66'); } });
   // carpet
