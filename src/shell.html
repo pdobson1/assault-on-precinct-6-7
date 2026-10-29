@@ -1,0 +1,99 @@
+<title>Assault on Precinct 6-7</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap">
+<style>
+/* Layout: one arcade cabinet column — marquee, CRT screen, control deck. Deliberately single dark theme. */
+:root{
+  --ink:#080b19;
+  --cabinet:#111632;
+  --bezel:#1c2350;
+  --hivis:#d4ef00;
+  --lamp:#2f5bff;
+  --text:#d3d7ea;
+  --muted:#8188ab;
+  --display:"Press Start 2P", "Courier New", monospace;
+  --body:"VT323", "Courier New", monospace;
+  color-scheme:dark;
+}
+html,body{background:var(--ink);color:var(--text)}
+body{font-family:var(--body);font-size:20px;line-height:1.2}
+.wrap{max-width:1200px;margin:0 auto;padding-block:14px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;align-items:center;gap:14px}
+.marquee{width:100%;display:flex;flex-direction:column;align-items:center;gap:8px}
+.marquee h1{margin:0;font-family:var(--display);font-size:clamp(12px,2.4vw,20px);letter-spacing:.08em;color:var(--hivis);text-align:center;text-wrap:balance;text-shadow:3px 3px 0 #1b2a6b}
+.batt{width:min(100%,560px);height:10px;background:conic-gradient(var(--hivis) 90deg,var(--lamp) 90deg 180deg,var(--hivis) 180deg 270deg,var(--lamp) 270deg) 0 0/20px 20px}
+.screen{position:relative;background:#000;padding:10px;border-radius:14px;background:linear-gradient(#20285a,#0e1230);box-shadow:0 0 0 2px #2a3370,0 18px 50px rgba(0,0,0,.6),0 0 60px rgba(47,91,255,.18);max-width:100%}
+canvas{display:block;image-rendering:pixelated;image-rendering:crisp-edges;border-radius:4px;outline:none;touch-action:none;max-width:100%}
+canvas:focus-visible{box-shadow:0 0 0 2px var(--hivis)}
+.deck{width:100%;max-width:980px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px 28px}
+.deck h2{grid-column:1/-1;margin:6px 0 0;font-family:var(--display);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+.row{display:flex;align-items:center;gap:10px;min-width:0}
+.keys{display:flex;gap:4px;flex-shrink:0}
+kbd{font-family:var(--display);font-size:9px;min-width:26px;height:24px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;background:var(--bezel);border:1px solid #39428a;border-bottom-width:3px;border-radius:4px;color:var(--text)}
+.row span{min-width:0}
+.tips{grid-column:1/-1;margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;color:var(--muted)}
+.tips b{color:var(--hivis);font-weight:normal}
+.btn{font-family:var(--display);font-size:9px;letter-spacing:.08em;background:var(--bezel);color:var(--text);border:1px solid #39428a;border-radius:6px;padding:8px 12px;cursor:pointer}
+.btn:focus-visible{outline:2px solid var(--hivis);outline-offset:2px}
+.touch{display:none;width:100%;max-width:640px;justify-content:space-between;align-items:center;gap:12px;user-select:none;-webkit-user-select:none;touch-action:none}
+.pad{width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,#232b5c 0 30%,#171d44 31%);border:2px solid #39428a;position:relative;flex-shrink:0}
+.pad::before,.pad::after{content:"";position:absolute;background:#2d3673;border-radius:6px}
+.pad::before{left:50%;top:14px;bottom:14px;width:34px;transform:translateX(-50%)}
+.pad::after{top:50%;left:14px;right:14px;height:34px;transform:translateY(-50%)}
+.abtns{display:grid;grid-template-columns:repeat(2,64px);gap:10px}
+.abtns button{width:64px;height:64px;border-radius:50%;font-family:var(--display);font-size:8px;border:2px solid #39428a;color:#0b0e20;touch-action:none}
+.b-atk{background:var(--hivis)}
+.b-jmp{background:#7ea2ff}
+.b-spc{background:#ff7a59}
+.b-st{background:#c9cde0}
+.b-on{filter:brightness(1.3)}
+.touch-only{display:none}
+@media (hover:none) and (pointer:coarse){
+  .touch{display:flex}
+  .touch-only{display:inline}
+  .key-only{display:none}
+}
+@media (prefers-reduced-motion:reduce){.screen{box-shadow:0 0 0 2px #2a3370}}
+</style>
+
+<div class="wrap">
+  <header class="marquee">
+    <div class="batt" aria-hidden="true"></div>
+    <h1>Assault on Precinct 6-7</h1>
+  </header>
+
+  <div class="screen" id="screen">
+    <canvas id="game" width="384" height="216" tabindex="0" aria-label="Assault on Precinct 6-7 game screen. Click, then press Enter to start."></canvas>
+  </div>
+
+  <div class="touch" id="touch" aria-label="Touch controls">
+    <div class="pad" id="pad" aria-label="Movement pad"></div>
+    <div class="abtns">
+      <button class="b-spc" data-k="spc" aria-label="Baton spin">SPIN</button>
+      <button class="b-st" data-k="start" aria-label="Start or pause">START</button>
+      <button class="b-jmp" data-k="jump" aria-label="Jump">JUMP</button>
+      <button class="b-atk" data-k="atk" aria-label="Punch">PUNCH</button>
+    </div>
+  </div>
+
+  <section class="deck" aria-label="How to play">
+    <h2>Duty briefing</h2>
+    <div class="row key-only"><span class="keys"><kbd>←</kbd><kbd>↑</kbd><kbd>↓</kbd><kbd>→</kbd></span><span>Move (or WASD)</span></div>
+    <div class="row key-only"><span class="keys"><kbd>Z</kbd><kbd>J</kbd></span><span>Punch. Keep landing hits for a 3-hit combo</span></div>
+    <div class="row key-only"><span class="keys"><kbd>X</kbd><kbd>Space</kbd></span><span>Jump. Punch in the air to flying-kick</span></div>
+    <div class="row key-only"><span class="keys"><kbd>C</kbd><kbd>L</kbd></span><span>Baton spin. Hits all round you, costs a bit of health</span></div>
+    <div class="row key-only"><span class="keys"><kbd>Enter</kbd></span><span>Start / pause</span></div>
+    <div class="row"><span class="keys"><button class="btn" id="mute" type="button" aria-pressed="false">SOUND ON</button></span><span>Toggle sound <span class="key-only">(M)</span></span></div>
+    <ul class="tips">
+      <li>Catch a goon mid <b>6-7</b> and you'll cut them off: double damage plus a <b>BUSTED</b> bonus.</li>
+      <li>Smash bins, boxes and filing cabinets for a <b>cuppa</b> or a <b>chip barm</b>.</li>
+      <li>Clear the front desk, CID and the custody suite, then deal with Silly Sausage.</li>
+    </ul>
+  </section>
+</div>
+
+<script>window.SFX67_B64="__SFX67__";</script>
+<script>
+__GAME__
+</script>
