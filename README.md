@@ -24,6 +24,10 @@ Gamepads work too (Xbox, PlayStation and most standard pads): left stick or d-pa
 
 On touch screens an on-screen pad and buttons appear.
 
+## Two players
+
+Plug in two gamepads. Player 2 presses Start on the second pad to join, either on the officer select screen or mid-game, and takes whichever officer player 1 didn't pick. Each player has their own health, lives and score. A few extra goons turn up in two-player games, and Silly Sausage is tougher. If one officer runs out of lives the other carries on, and pressing Start brings them back with a fresh set of lives.
+
 ## The station
 
 Fight through four areas: outside the nick, the front desk, the CID office and the custody suite, where Silly Sausage is waiting. Catch a goon mid 6-7 for double damage and a BUSTED bonus. Smash bins, boxes and filing cabinets for a brew or a chip barm.
