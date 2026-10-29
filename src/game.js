@@ -331,6 +331,12 @@ function buildBG() {
   for (let i = 0; i < 12; i++) R(980 + Math.sin(i / 12 * Math.PI * 2) * 7 | 0, 44 - Math.cos(i / 12 * Math.PI * 2) * 7 | 0, 1, 1, '#333');
   const hand = (ang, len, c) => { for (let r = 0; r < len; r += 0.5) R(Math.round(980 + Math.sin(ang) * r), Math.round(44 - Math.cos(ang) * r), 1, 1, c); };
   hand((6 + 7 / 60) / 12 * Math.PI * 2, 5, '#111'); hand(7 / 60 * Math.PI * 2, 8, '#111');
+  // sandwich shop flyer above the waiting chairs
+  R(1014, 30, 52, 60, '#f6d10a'); R(1014, 30, 52, 12, '#c8102e'); R(1039, 29, 2, 2, '#1f3fbf');
+  tiny(b, 'SARNIE BAR', 1040 - tinyW('SARNIE BAR') / 2 | 0, 34, '#ffffff');
+  R(1028, 46, 24, 4, '#e8bd70'); R(1027, 50, 26, 2, '#7ab648'); R(1027, 52, 26, 2, '#c0504d'); R(1028, 54, 24, 3, '#d9a35c');
+  tiny(b, 'SAUSAGE £6', 1040 - tinyW('SAUSAGE £6') / 2 | 0, 61, '#222'); tiny(b, 'BLT £7', 1040 - tinyW('BLT £7') / 2 | 0, 69, '#222');
+  tiny(b, 'FRESH DAILY', 1040 - tinyW('FRESH DAILY') / 2 | 0, 80, '#c8102e');
   // chairs
   for (let x = 1010; x < 1150; x += 22) { R(x, 116, 18, 5, '#d8692b'); R(x + 1, 102, 16, 14, '#e07a3b'); R(x + 2, 121, 2, 16, '#a8aab0'); R(x + 14, 121, 2, 16, '#a8aab0'); }
   R(1006, 121, 148, 2, '#a8aab0');
@@ -348,7 +354,13 @@ function buildBG() {
   for (let x = 1330; x < 2080; x += 110) { b.fillStyle = 'rgba(255,255,230,0.10)'; b.fillRect(x - 10, 12, 60, 40); R(x, 11, 40, 3, '#fffde8'); }
   R(1296, 0, 8, 140, '#7d8a8a');
   const blinds = x => { R(x - 3, 26, 86, 56, '#dfe3dc'); R(x, 29, 80, 50, '#17203f'); for (let y = 29; y < 79; y += 3) R(x, y, 80, 2, '#c2c8bd'); R(x + 39, 29, 2, 50, '#dfe3dc'); };
-  blinds(1330); blinds(1470);
+  blinds(1330); blinds(1480);
+  // duty board of collar numbers between the windows
+  R(1417, 22, 58, 62, '#c0c4c8'); R(1419, 24, 54, 58, '#fbfbf8'); R(1419, 24, 54, 9, '#1b2a73');
+  tiny(b, 'ON DUTY', 1446 - tinyW('ON DUTY') / 2 | 0, 26, '#ffffff');
+  ['PC67 SUTTON', 'PC76 SHEARER', 'SGT6 HOLT', 'PC667 BAINS', 'PC767 OKAFOR', 'PC6767 LEE'].forEach((t, i) => {
+    tiny(b, t, 1421, 36 + i * 7, '#1b2a73'); R(1470, 37 + i * 7, 2, 2, i < 2 ? '#2fa84f' : i === 4 ? '#d21f1f' : '#e8a600');
+  });
   // desk with CRT
   R(1386, 108, 72, 4, '#7c6249'); R(1390, 112, 4, 26, '#5d4836'); R(1450, 112, 4, 26, '#5d4836');
   R(1396, 88, 26, 20, '#d9d2bd'); R(1399, 91, 20, 13, '#204a3a'); tiny(b, 'C:', 1401, 93, '#7dff9e'); R(1405, 106, 8, 2, '#bdb6a1'); R(1428, 102, 18, 6, '#d9d2bd');
@@ -381,7 +393,14 @@ function buildBG() {
   };
   signup(1842, '6-A-SIDE', 'FOOTBALL', '#c22'); signup(1900, '7-A-SIDE', 'NETBALL', '#1f6b3a');
   // filing cabinets
-  [1966, 1990, 2014].forEach(x => { R(x, 94, 22, 44, '#8b929b'); for (let y = 97; y < 136; y += 11) { R(x + 2, y, 18, 9, '#9da4ad'); R(x + 8, y + 3, 6, 2, '#555c66'); } });
+  [1966, 1990].forEach(x => { R(x, 94, 22, 44, '#8b929b'); for (let y = 97; y < 136; y += 11) { R(x + 2, y, 18, 9, '#9da4ad'); R(x + 8, y + 3, 6, 2, '#555c66'); } });
+  // lift at the end of the office
+  R(2018, 26, 54, 114, '#7d8a8a'); R(2022, 44, 46, 96, '#9aa3aa');
+  R(2024, 46, 21, 94, '#c5ccd2'); R(2046, 46, 21, 94, '#c5ccd2'); R(2045, 46, 1, 94, '#5b6369');
+  R(2026, 48, 2, 88, '#e1e6ea'); R(2048, 48, 2, 88, '#e1e6ea');
+  R(2037, 30, 16, 10, '#111'); tiny(b, '6', 2043, 32, '#ff3b2f'); R(2049, 33, 2, 1, '#ff3b2f'); R(2048, 34, 4, 1, '#ff3b2f');
+  R(2025, 62, 42, 15, '#f4f4f4'); tiny(b, 'MAX LOAD', 2046 - tinyW('MAX LOAD') / 2 | 0, 64, '#222'); tiny(b, '6.7 TONNES', 2046 - tinyW('6.7 TONNES') / 2 | 0, 70, '#c22');
+  R(2068, 82, 3, 9, '#5b6369'); R(2069, 84, 1, 1, '#ffd23a'); R(2069, 88, 1, 1, '#ffd23a');
   // carpet
   for (let y = FLOOR_Y; y < H; y += 16) for (let x = 1300; x < 2080; x += 16) R(x, y, 16, 16, ((x / 16 + y / 16) | 0) % 2 ? '#3d475d' : '#384157');
   for (let i = 0; i < 500; i++) R(1300 + sr() * 780 | 0, FLOOR_Y + sr() * 76 | 0, 1, 1, '#4a5570');
