@@ -127,7 +127,7 @@ const TF = {
   Z:'111001010100111','0':'111101101101111','1':'010110010010111','2':'110001010100111','3':'110001010001110',
   '4':'101101111001001','5':'111100110001110','6':'011100111101111','7':'111001010010010','8':'111101111101111',
   '9':'111101111001110','-':'000000111000000','.':'000000000000010','!':'010010010000010','?':'110001010000010',
-  '£':'011010111010111',':':'000010000010000','"':'101101000000000',"'":'010010000000000','/':'001001010100100'
+  '£':'011010111010111',',':'000000000010100',':':'000010000010000','"':'101101000000000',"'":'010010000000000','/':'001001010100100'
 };
 function tiny(c, s, x, y, col, sc = 1) {
   c.fillStyle = col; let cx = x;
@@ -439,10 +439,10 @@ function buildBG() {
   const hand = (ang, len, c) => { for (let r = 0; r < len; r += 0.5) R(Math.round(980 + Math.sin(ang) * r), Math.round(44 - Math.cos(ang) * r), 1, 1, c); };
   hand((6 + 7 / 60) / 12 * Math.PI * 2, 5, '#111'); hand(7 / 60 * Math.PI * 2, 8, '#111');
   // sandwich shop flyer above the waiting chairs
-  R(1014, 30, 52, 60, '#f6d10a'); R(1014, 30, 52, 12, '#c8102e'); R(1039, 29, 2, 2, '#1f3fbf');
-  tiny(b, 'SARNIE BAR', 1040 - tinyW('SARNIE BAR') / 2 | 0, 34, '#ffffff');
+  R(1009, 30, 62, 60, '#f6d10a'); R(1009, 30, 62, 12, '#c8102e'); R(1039, 29, 2, 2, '#1f3fbf');
+  tiny(b, 'OLD BILL BITEZ', 1040 - tinyW('OLD BILL BITEZ') / 2 | 0, 34, '#ffffff');
   R(1028, 46, 24, 4, '#e8bd70'); R(1027, 50, 26, 2, '#7ab648'); R(1027, 52, 26, 2, '#c0504d'); R(1028, 54, 24, 3, '#d9a35c');
-  tiny(b, 'SAUSAGE £6', 1040 - tinyW('SAUSAGE £6') / 2 | 0, 61, '#222'); tiny(b, 'BLT £7', 1040 - tinyW('BLT £7') / 2 | 0, 69, '#222');
+  tiny(b, 'CHEESE £6', 1040 - tinyW('CHEESE £6') / 2 | 0, 61, '#222'); tiny(b, 'BLT £7', 1040 - tinyW('BLT £7') / 2 | 0, 69, '#222');
   tiny(b, 'FRESH DAILY', 1040 - tinyW('FRESH DAILY') / 2 | 0, 80, '#c8102e');
   // chairs
   for (let x = 1010; x < 1150; x += 22) { R(x, 116, 18, 5, '#d8692b'); R(x + 1, 102, 16, 14, '#e07a3b'); R(x + 2, 121, 2, 16, '#a8aab0'); R(x + 14, 121, 2, 16, '#a8aab0'); }
@@ -462,12 +462,14 @@ function buildBG() {
   R(1296, 0, 8, 140, '#7d8a8a');
   const blinds = x => { R(x - 3, 26, 86, 56, '#dfe3dc'); R(x, 29, 80, 50, '#17203f'); for (let y = 29; y < 79; y += 3) R(x, y, 80, 2, '#c2c8bd'); R(x + 39, 29, 2, 50, '#dfe3dc'); };
   blinds(1330); blinds(1480);
-  // duty board of collar numbers between the windows
-  R(1417, 22, 58, 62, '#c0c4c8'); R(1419, 24, 54, 58, '#fbfbf8'); R(1419, 24, 54, 9, '#1b2a73');
-  tiny(b, 'ON DUTY', 1446 - tinyW('ON DUTY') / 2 | 0, 26, '#ffffff');
-  ['PC67 SUTTON', 'PC76 SHEARER', 'SGT6 HOLT', 'PC667 BAINS', 'PC767 OKAFOR', 'PC6767 LEE'].forEach((t, i) => {
-    tiny(b, t, 1421, 36 + i * 7, '#1b2a73'); R(1470, 37 + i * 7, 2, 2, i < 2 ? '#2fa84f' : i === 4 ? '#d21f1f' : '#e8a600');
-  });
+  // charity fundraiser sheet between the windows, with a thermometer a long way off its target
+  R(1417, 22, 58, 62, '#c0c4c8'); R(1419, 24, 54, 58, '#fbfbf8'); R(1419, 24, 54, 15, '#c8102e'); R(1445, 22, 2, 2, '#1f3fbf');
+  tiny(b, 'CHARITY', 1446 - tinyW('CHARITY') / 2 | 0, 26, '#ffffff'); tiny(b, 'APPEAL', 1446 - tinyW('APPEAL') / 2 | 0, 32, '#ffffff');
+  R(1424, 43, 7, 32, '#9aa3ab'); R(1425, 44, 5, 30, '#ffffff'); R(1425, 68, 5, 6, '#d21f1f');
+  R(1422, 73, 11, 7, '#9aa3ab'); R(1423, 74, 9, 5, '#d21f1f');
+  for (let y = 46; y < 72; y += 5) R(1431, y, 2, 1, '#9aa3ab');
+  tiny(b, 'TARGET', 1437, 44, '#222'); tiny(b, '£67,000', 1437, 51, '#c8102e');
+  tiny(b, 'RAISED', 1437, 62, '#222'); tiny(b, '£6,700', 1437, 69, '#2a3a8a');
   // desk with CRT
   R(1386, 108, 72, 4, '#7c6249'); R(1390, 112, 4, 26, '#5d4836'); R(1450, 112, 4, 26, '#5d4836');
   R(1396, 88, 26, 20, '#d9d2bd'); R(1399, 91, 20, 13, '#204a3a'); tiny(b, 'C:', 1401, 93, '#7dff9e'); R(1405, 106, 8, 2, '#bdb6a1'); R(1428, 102, 18, 6, '#d9d2bd');
